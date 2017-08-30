@@ -25,7 +25,7 @@ RUN apk update -qq \
 
 COPY entrypoint.sh              /entrypoint.sh
 
-ARG CROWD_VERSION=3.0.0
+ARG CROWD_VERSION=2.1.0
 ARG DOWNLOAD_URL=https://www.atlassian.com/software/crowd/downloads/binary/atlassian-crowd-${CROWD_VERSION}.tar.gz
 
 COPY . /tmp
@@ -33,5 +33,7 @@ COPY . /tmp
 RUN mkdir -p                             ${CROWD_INSTALL_DIR} \
     && curl -L --silent                  ${DOWNLOAD_URL} | tar -xz --strip-components=1 -C "$CROWD_INSTALL_DIR" \
     && chown -R ${RUN_USER}:${RUN_GROUP} ${CROWD_INSTALL_DIR}/ \
+    && sed -i -e '2s/^exec/cd "`dirname "$0"`" \&\& exec/' ${CROWD_INSTALL_DIR}/start_crowd.sh \
+    && sed -i -e 's#exec "$PRGDIR"/"$EXECUTABLE" start "$@"#exec "$PRGDIR"/"$EXECUTABLE" run "$@"#g' ${CROWD_INSTALL_DIR}/apache-tomcat/bin/startup.sh \
     && sed -i -e 's/-Xms\([0-9]\+[kmg]\) -Xmx\([0-9]\+[kmg]\)/-Xms\${JVM_MINIMUM_MEMORY:=\1} -Xmx\${JVM_MAXIMUM_MEMORY:=\2} \${JVM_SUPPORT_RECOMMENDED_ARGS} -Dcrowd.home=\${CROWD_HOME}/g' ${CROWD_INSTALL_DIR}/apache-tomcat/bin/setenv.sh \
     && sed -i -e 's/port="8095"/port="8095" secure="${catalinaConnectorSecure}" scheme="${catalinaConnectorScheme}" proxyName="${catalinaConnectorProxyName}" proxyPort="${catalinaConnectorProxyPort}"/' ${CROWD_INSTALL_DIR}/apache-tomcat/conf/server.xml
