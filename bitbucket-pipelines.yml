@@ -17,7 +17,7 @@ pipelines:
             - export MAC_PRODUCT_KEY=crowd
             - python /usr/src/app/create_release.py
   branches:
-    base-7:
+    base-3:
       - step:
           script:
             - git fetch --all
