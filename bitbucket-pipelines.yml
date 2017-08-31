@@ -16,7 +16,6 @@ pipelines:
             - export GIT_EMAIL=pipelines-agent@atlassian.com
             - export MAC_PRODUCT_KEY=crowd
             - python /usr/src/app/create_release.py
-pipelines:
   custom:
     create-release-2x:
       - step:
