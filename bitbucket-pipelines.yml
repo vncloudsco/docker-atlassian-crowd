@@ -4,7 +4,7 @@ clone:
 
 pipelines:
   custom:
-    create-release-3x:
+    create-release-base-3:
       - step:
           script:
             - git fetch --all
@@ -17,7 +17,7 @@ pipelines:
             - export MAC_PRODUCT_KEY=crowd
             - python /usr/src/app/create_release.py
   custom:
-    create-release-2x:
+    create-release-base-2:
       - step:
           script:
             - git fetch --all
