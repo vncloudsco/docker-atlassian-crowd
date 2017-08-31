@@ -16,7 +16,6 @@ pipelines:
             - export GIT_EMAIL=pipelines-agent@atlassian.com
             - export MAC_PRODUCT_KEY=crowd
             - python /usr/src/app/create_release.py
-  custom:
     create-release-base-2:
       - step:
           script:
@@ -42,7 +41,6 @@ pipelines:
             - export GIT_EMAIL=pipelines-agent@atlassian.com
             - export MAC_PRODUCT_KEY=crowd
             - python /usr/src/app/update_release.py
-  branches:
     base-2:
       - step:
           script:
