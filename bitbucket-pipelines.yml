@@ -4,7 +4,20 @@ clone:
 
 pipelines:
   custom:
-    create-release:
+    create-release-base-3:
+      - step:
+          script:
+            - git fetch --all
+            - export BASE_BRANCH=base-3
+            - export BASE_VERSION=3
+            - export DOCKER_REPO=dchevell/crowd
+            - export DOCKERFILE_VERSION_STRING=CROWD_VERSION
+            - export GIT_USER=pipelinesagent
+            - export GIT_EMAIL=pipelines-agent@atlassian.com
+            - export MAC_PRODUCT_KEY=crowd
+            - python /usr/src/app/create_release.py
+  custom:
+    create-release-base-2:
       - step:
           script:
             - git fetch --all
@@ -16,6 +29,19 @@ pipelines:
             - export GIT_EMAIL=pipelines-agent@atlassian.com
             - export MAC_PRODUCT_KEY=crowd
             - python /usr/src/app/create_release.py
+  branches:
+    base-3:
+      - step:
+          script:
+            - git fetch --all
+            - export BASE_BRANCH=base-3
+            - export BASE_VERSION=3
+            - export DOCKER_REPO=dchevell/crowd
+            - export DOCKERFILE_VERSION_STRING=CROWD_VERSION
+            - export GIT_USER=pipelinesagent
+            - export GIT_EMAIL=pipelines-agent@atlassian.com
+            - export MAC_PRODUCT_KEY=crowd
+            - python /usr/src/app/update_release.py
   branches:
     base-2:
       - step:
