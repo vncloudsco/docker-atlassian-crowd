@@ -25,7 +25,7 @@ RUN apk update -qq \
 
 COPY entrypoint.sh              /entrypoint.sh
 
-ARG CROWD_VERSION=2.1.0
+ARG CROWD_VERSION=2.0.0
 ARG DOWNLOAD_URL=https://www.atlassian.com/software/crowd/downloads/binary/atlassian-crowd-${CROWD_VERSION}.tar.gz
 
 COPY . /tmp
