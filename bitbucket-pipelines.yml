@@ -7,49 +7,23 @@ pipelines:
     create-release-base-3:
       - step:
           script:
+            - git remote set-url origin ${BITBUCKET_GIT_HTTP_ORIGIN}
             - git fetch --all
-            - export BASE_BRANCH=base-3
-            - export BASE_VERSION=3
-            - export DOCKER_REPO=dchevell/crowd
-            - export DOCKERFILE_VERSION_STRING=CROWD_VERSION
-            - export GIT_USER=pipelinesagent
-            - export GIT_EMAIL=pipelines-agent@atlassian.com
-            - export MAC_PRODUCT_KEY=crowd
-            - python /usr/src/app/create_release.py
-    create-release-base-2:
-      - step:
-          script:
-            - git fetch --all
-            - export BASE_BRANCH=base-2
-            - export BASE_VERSION=2
-            - export DOCKER_REPO=dchevell/crowd
-            - export DOCKERFILE_VERSION_STRING=CROWD_VERSION
-            - export GIT_USER=pipelinesagent
-            - export GIT_EMAIL=pipelines-agent@atlassian.com
-            - export MAC_PRODUCT_KEY=crowd
-            - python /usr/src/app/create_release.py
+            - export BASE_BRANCH='base-3'
+            - export MAC_PRODUCT_KEY='crowd'
+            - export DOCKERFILE_VERSION_STRING='CROWD_VERSION'
+            - export DEFAULT_RELEASE='true'
+            - export ADDITIONAL_TAG_SUFFIXES='alpine'
+            - python /usr/src/app/run.py --create
   branches:
     base-3:
       - step:
           script:
+            - git remote set-url origin ${BITBUCKET_GIT_HTTP_ORIGIN}
             - git fetch --all
-            - export BASE_BRANCH=base-3
-            - export BASE_VERSION=3
-            - export DOCKER_REPO=dchevell/crowd
-            - export DOCKERFILE_VERSION_STRING=CROWD_VERSION
-            - export GIT_USER=pipelinesagent
-            - export GIT_EMAIL=pipelines-agent@atlassian.com
-            - export MAC_PRODUCT_KEY=crowd
-            - python /usr/src/app/update_release.py
-    base-2:
-      - step:
-          script:
-            - git fetch --all
-            - export BASE_BRANCH=base-2
-            - export BASE_VERSION=2
-            - export DOCKER_REPO=dchevell/crowd
-            - export DOCKERFILE_VERSION_STRING=CROWD_VERSION
-            - export GIT_USER=pipelinesagent
-            - export GIT_EMAIL=pipelines-agent@atlassian.com
-            - export MAC_PRODUCT_KEY=crowd
-            - python /usr/src/app/update_release.py
+            - export BASE_BRANCH='base-3'
+            - export MAC_PRODUCT_KEY='crowd'
+            - export DOCKERFILE_VERSION_STRING='CROWD_VERSION'
+            - export DEFAULT_RELEASE='true'
+            - export ADDITIONAL_TAG_SUFFIXES='alpine'
+            - python /usr/src/app/run.py --create
