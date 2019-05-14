@@ -27,3 +27,18 @@ pipelines:
             - export DEFAULT_RELEASE='true'
             - export ADDITIONAL_TAG_SUFFIXES='alpine'
             - python /usr/src/app/run.py --create
+    release/*:
+      - step:
+          services:
+            - docker
+          caches:
+            - docker
+          script:
+            - docker login --username $DOCKER_USERNAME --password $DOCKER_PASSWORD
+            - >
+              export REPO_NAME='dchevell/crowd'
+              export IMAGE=$(docker build -q .)
+              for tag in `git tag -l --points-at HEAD`; do
+                docker tag ${IMAGE} ${REPO_NAME}:${tag}
+                docker push ${REPO_NAME}:${tag}
+              done
