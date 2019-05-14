@@ -1,44 +1,35 @@
-image: dchevell/docker-release-maker:latest
-clone:
-  depth: full
+image: dchevell/docker-release-maker:build-from-template
 
 pipelines:
   custom:
     create-release-base-3:
-      - step:
-          script:
-            - git remote set-url origin ${BITBUCKET_GIT_HTTP_ORIGIN}
-            - git fetch --all
-            - export BASE_BRANCH='base-3'
-            - export MAC_PRODUCT_KEY='crowd'
-            - export DOCKERFILE_VERSION_STRING='CROWD_VERSION'
-            - export DEFAULT_RELEASE='true'
-            - export ADDITIONAL_TAG_SUFFIXES='alpine'
-            - python /usr/src/app/run.py --create
-  branches:
-    base-3:
-      - step:
-          script:
-            - git remote set-url origin ${BITBUCKET_GIT_HTTP_ORIGIN}
-            - git fetch --all
-            - export BASE_BRANCH='base-3'
-            - export MAC_PRODUCT_KEY='crowd'
-            - export DOCKERFILE_VERSION_STRING='CROWD_VERSION'
-            - export DEFAULT_RELEASE='true'
-            - export ADDITIONAL_TAG_SUFFIXES='alpine'
-            - python /usr/src/app/run.py --update
-    release/**:
       - step:
           services:
             - docker
           caches:
             - docker
           script:
+            - export BASE_VERSION='3'
+            - export DEFAULT_RELEASE='true'
+            - export DOCKER_REPO='dchevell/crowd'
+            - export DOCKERFILE_VERSION_ARG='CROWD_VERSION'
+            - export MAC_PRODUCT_KEY='crowd'
+            - export TAG_SUFFIXES='alpine'
             - docker login --username ${DOCKER_USERNAME} --password ${DOCKER_PASSWORD}
-            - REPO_NAME='dchevell/crowd'
-            - IMAGE=$(docker build -q .)
-            - >
-              for tag in $(git tag -l --points-at HEAD); do
-                docker tag "$IMAGE" "${REPO_NAME}":"${tag}";
-                docker push "$REPO_NAME":"$tag";
-              done
+            - python /usr/src/app/run.py --create
+  branches:
+    base-3:
+      - step:
+          services:
+            - docker
+          caches:
+            - docker
+          script:
+            - export BASE_VERSION='3'
+            - export DEFAULT_RELEASE='true'
+            - export DOCKER_REPO='dchevell/crowd'
+            - export DOCKERFILE_VERSION_ARG='CROWD_VERSION'
+            - export MAC_PRODUCT_KEY='crowd'
+            - export TAG_SUFFIXES='alpine'
+            - docker login --username ${DOCKER_USERNAME} --password ${DOCKER_PASSWORD}
+            - python /usr/src/app/run.py --update
