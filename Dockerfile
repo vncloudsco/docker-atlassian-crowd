@@ -22,7 +22,7 @@ RUN apk add --no-cache wget curl openssh bash procps openssl perl ttf-dejavu tin
 
 COPY entrypoint.sh              /entrypoint.sh
 
-ARG CROWD_VERSION=3.0.0
+ARG CROWD_VERSION=3.3.0
 ARG DOWNLOAD_URL=https://www.atlassian.com/software/crowd/downloads/binary/atlassian-crowd-${CROWD_VERSION}.tar.gz
 
 COPY . /tmp
