@@ -6,8 +6,6 @@ pipelines:
       - step:
           services:
             - docker
-          caches:
-            - docker
           script:
             - export BASE_VERSION='3'
             - export DEFAULT_RELEASE='true'
@@ -21,8 +19,6 @@ pipelines:
     base-3:
       - step:
           services:
-            - docker
-          caches:
             - docker
           script:
             - export BASE_VERSION='3'
