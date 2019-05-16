@@ -1,4 +1,4 @@
-image: dchevell/docker-release-maker:build-from-template
+image: atlassian/docker-release-maker:latest
 
 pipelines:
   custom:
