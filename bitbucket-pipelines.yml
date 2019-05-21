@@ -2,7 +2,7 @@ image: atlassian/docker-release-maker:build-concurrently
 
 pipelines:
   custom:
-    create-release-base-3:
+    base-3-create-releases:
       - step:
           services:
             - docker
@@ -16,6 +16,17 @@ pipelines:
             - export TAG_SUFFIXES='alpine'
             - docker login --username ${DOCKER_USERNAME} --password ${DOCKER_PASSWORD}
             - python /usr/src/app/run.py --create
+    base-3-create-custom-release:
+      - variables:
+          - name: CROWD_VERSION
+          - name: DOCKER_TAG
+      - step:
+          services:
+            - docker
+          script:
+            - docker login --username ${DOCKER_USERNAME} --password ${DOCKER_PASSWORD}
+            - docker build -t dchevell/crowd:${DOCKER_TAG} --build-arg CROWD_VERSION=${CROWD_VERSION} .
+            - docker push dchevell/crowd:${DOCKER_TAG}
   branches:
     base-3:
       - step:
