@@ -14,7 +14,7 @@ pipelines:
             - export DOCKERFILE_VERSION_ARG='CROWD_VERSION'
             - export MAC_PRODUCT_KEY='crowd'
             - export TAG_SUFFIXES='ubuntu'
-            - docker login --username ${DOCKER_USERNAME} --password ${DOCKER_PASSWORD}
+            - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
             - python /usr/src/app/run.py --create
     base-3-ubuntu-create-custom-release:
       - variables:
@@ -24,7 +24,7 @@ pipelines:
           services:
             - docker
           script:
-            - docker login --username ${DOCKER_USERNAME} --password ${DOCKER_PASSWORD}
+            - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
             - docker build -t dchevell/crowd:${DOCKER_TAG} --build-arg CROWD_VERSION=${CROWD_VERSION} .
             - docker push dchevell/crowd:${DOCKER_TAG}
   branches:
@@ -40,5 +40,5 @@ pipelines:
             - export DOCKERFILE_VERSION_ARG='CROWD_VERSION'
             - export MAC_PRODUCT_KEY='crowd'
             - export TAG_SUFFIXES='ubuntu'
-            - docker login --username ${DOCKER_USERNAME} --password ${DOCKER_PASSWORD}
+            - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
             - python /usr/src/app/run.py --update
