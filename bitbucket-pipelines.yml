@@ -2,8 +2,9 @@ image: atlassian/docker-release-maker:latest
 
 pipelines:
   custom:
-    base-3-ubuntu-create-releases:
+    new-releases:
       - step:
+          name: Crowd Ubuntu
           services:
             - docker
           script:
@@ -16,7 +17,22 @@ pipelines:
             - export TAG_SUFFIXES='ubuntu'
             - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
             - python /usr/src/app/run.py --create
-    base-3-ubuntu-create-custom-release:
+      - step:
+          name: Crowd Alpine
+          services:
+            - docker
+          script:
+            - export BASE_VERSION='3'
+            - export CONCURRENT_BUILDS='4'
+            - export DEFAULT_RELEASE='false'
+            - export DOCKER_REPO='dchevell/crowd'
+            - export DOCKERFILE='Dockerfile-alpine'
+            - export DOCKERFILE_VERSION_ARG='CROWD_VERSION'
+            - export MAC_PRODUCT_KEY='crowd'
+            - export TAG_SUFFIXES='alpine'
+            - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
+            - python /usr/src/app/run.py --create
+    ubuntu-custom-release:
       - variables:
           - name: CROWD_VERSION
           - name: DOCKER_TAG
@@ -25,11 +41,28 @@ pipelines:
             - docker
           script:
             - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
-            - docker build -t dchevell/crowd:${DOCKER_TAG} --build-arg CROWD_VERSION=${CROWD_VERSION} .
+            - >
+              docker build -t dchevell/crowd:${DOCKER_TAG}
+              --build-arg CROWD_VERSION=${CROWD_VERSION} .
+            - docker push dchevell/crowd:${DOCKER_TAG}
+    alpine-custom-release:
+      - variables:
+          - name: CROWD_VERSION
+          - name: DOCKER_TAG
+      - step:
+          services:
+            - docker
+          script:
+            - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
+            - >
+              docker build -t dchevell/crowd:${DOCKER_TAG}
+              -f Dockerfile-alpine
+              --build-arg CROWD_VERSION=${CROWD_VERSION} .
             - docker push dchevell/crowd:${DOCKER_TAG}
   branches:
-    base-3-ubuntu:
+    base-3:
       - step:
+          name: Crowd Ubuntu
           services:
             - docker
           script:
@@ -40,5 +73,20 @@ pipelines:
             - export DOCKERFILE_VERSION_ARG='CROWD_VERSION'
             - export MAC_PRODUCT_KEY='crowd'
             - export TAG_SUFFIXES='ubuntu'
+            - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
+            - python /usr/src/app/run.py --update
+      - step:
+          name: Crowd Alpine
+          services:
+            - docker
+          script:
+            - export BASE_VERSION='3'
+            - export CONCURRENT_BUILDS='4'
+            - export DEFAULT_RELEASE='false'
+            - export DOCKER_REPO='dchevell/crowd'
+            - export DOCKERFILE='Dockerfile-alpine'
+            - export DOCKERFILE_VERSION_ARG='CROWD_VERSION'
+            - export MAC_PRODUCT_KEY='crowd'
+            - export TAG_SUFFIXES='alpine'
             - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
             - python /usr/src/app/run.py --update
