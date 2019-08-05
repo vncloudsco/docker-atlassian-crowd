@@ -90,3 +90,9 @@ pipelines:
             - export TAG_SUFFIXES='alpine'
             - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
             - python /usr/src/app/run.py --update
+      - step:
+          name: Update README
+          image: atlassian/default-image:2
+          script:
+            - export DOCKER_REPO='dchevell/crowd'
+            - bin/push-readme.sh

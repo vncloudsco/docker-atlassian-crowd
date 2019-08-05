@@ -2,7 +2,7 @@
 
 Crowd provices single sign-on and user identity that's easy to use.
 
-Learn more about Crowd: <https://www.atlassian.com/software/crowd>
+Learn more about Crowd: [https://www.atlassian.com/software/crowd](https://www.atlassian.com/software/crowd)
 
 # Overview
 
