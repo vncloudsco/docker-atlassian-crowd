@@ -92,7 +92,8 @@ pipelines:
             - python /usr/src/app/run.py --update
       - step:
           name: Update README
-          image: atlassian/default-image:2
+          image: python:3.7-alpine3.9
           script:
             - export DOCKER_REPO='dchevell/crowd'
-            - bin/push-readme.sh
+            - pip install -q requests
+            - python bin/push-readme.py
