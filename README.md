@@ -1,4 +1,4 @@
-![Atlassian Crowd](https://www.atlassian.com/dam/wac/legacy/crowd_logo_landing.png)
+![Atlassian Crowd](https://wac-cdn.atlassian.com/dam/jcr:fd5bfb32-1640-4806-add6-760d7c33b57c/Crowd@2x-blue.png?cdnVersion=532)
 
 Crowd provices single sign-on and user identity that's easy to use.
 

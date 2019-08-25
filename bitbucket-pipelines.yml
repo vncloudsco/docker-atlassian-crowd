@@ -60,7 +60,7 @@ pipelines:
               --build-arg CROWD_VERSION=${CROWD_VERSION} .
             - docker push dchevell/crowd:${DOCKER_TAG}
   branches:
-    base-3:
+    master:
       - step:
           name: Crowd Ubuntu
           services:
