@@ -8,6 +8,7 @@ pipelines:
           services:
             - docker
           script:
+            - git submodule update --init --recursive
             - export BASE_VERSION='3'
             - export CONCURRENT_BUILDS='4'
             - export DEFAULT_RELEASE='true'
@@ -22,6 +23,7 @@ pipelines:
           services:
             - docker
           script:
+            - git submodule update --init --recursive
             - export BASE_VERSION='3'
             - export CONCURRENT_BUILDS='4'
             - export DEFAULT_RELEASE='false'
@@ -40,6 +42,7 @@ pipelines:
           services:
             - docker
           script:
+            - git submodule update --init --recursive
             - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
             - >
               docker build -t dchevell/crowd:${DOCKER_TAG}
@@ -53,6 +56,7 @@ pipelines:
           services:
             - docker
           script:
+            - git submodule update --init --recursive
             - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
             - >
               docker build -t dchevell/crowd:${DOCKER_TAG}
@@ -66,6 +70,7 @@ pipelines:
           services:
             - docker
           script:
+            - git submodule update --init --recursive
             - export BASE_VERSION='3'
             - export CONCURRENT_BUILDS='4'
             - export DEFAULT_RELEASE='true'
@@ -80,6 +85,7 @@ pipelines:
           services:
             - docker
           script:
+            - git submodule update --init --recursive
             - export BASE_VERSION='3'
             - export CONCURRENT_BUILDS='4'
             - export DEFAULT_RELEASE='false'
@@ -94,6 +100,27 @@ pipelines:
           name: Update README
           image: python:3.7-alpine3.9
           script:
+            - apk add --no-cache git
+            - git submodule update --init --recursive
             - export DOCKER_REPO='dchevell/crowd'
             - pip install -q requests
-            - python bin/push-readme.py
+            - python shared-components/image/push-readme.py
+  pull-requests:
+    '**':
+      - step:
+          image: python:3.7-alpine3.9
+          services:
+            - docker
+          script:
+            - apk add --no-cache git
+            - git submodule update --init --recursive
+            - pip install -q -r shared-components/tests/requirements.txt
+            - export PYTHONPATH=./shared-components/tests:$PYTHONPATH
+            - export MAC_PRODUCT_KEY='crowd'
+            - export DOCKERFILE='Dockerfile'
+            - export DOCKERFILE_VERSION_ARG='CROWD_VERSION'
+            - py.test tests/
+            - py.test shared-components/tests/
+            - export DOCKERFILE='Dockerfile-alpine'
+            - py.test tests/
+            - py.test shared-components/tests/
