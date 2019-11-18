@@ -3,8 +3,7 @@ import pytest
 from helpers import get_app_home, get_app_install_dir, get_bootstrap_proc, \
     parse_properties, parse_xml, run_image, wait_for_http_response, wait_for_proc
 
-CROWD_INSTALL_DIR = '/opt/atlassian/jira'
-CROWD_HOME = '/var/atlassian/application-data/jira'
+
 
 def test_server_xml_defaults(docker_cli, image):
     container = run_image(docker_cli, image)

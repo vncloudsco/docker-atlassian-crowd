@@ -14,8 +14,8 @@ For the `CROWD_HOME` directory that is used to store application data (amongst o
 
 To get started you can use a data volume, or named volumes. In this example we'll use named volumes.
 
-    $> docker volume create --name crowdVolume
-    $> docker run -v crowdVolume:/var/atlassian/application-data/crowd --name="crowd" -d -p 8095:8095 dchevell/crowd
+    docker volume create --name crowdVolume
+    docker run -v crowdVolume:/var/atlassian/application-data/crowd --name="crowd" -d -p 8095:8095 dchevell/crowd
 
 
 **Success**. Crowd is now available on [http://localhost:8095](http://localhost:8095)*
@@ -67,15 +67,15 @@ If you need to pass additional JVM arguments to Crowd, such as specifying a cust
 
 Example:
 
-    $> docker run -e JVM_SUPPORT_RECOMMENDED_ARGS=-Djavax.net.ssl.trustStore=/var/atlassian/application-data/crowd/cacerts -v crowdVolume:/var/atlassian/application-data/crowd --name="crowd" -d -p 8095:8095 dchevell/crowd
+    docker run -e JVM_SUPPORT_RECOMMENDED_ARGS=-Djavax.net.ssl.trustStore=/var/atlassian/application-data/crowd/cacerts -v crowdVolume:/var/atlassian/application-data/crowd --name="crowd" -d -p 8095:8095 dchevell/crowd
 
 # Upgrade
 
 To upgrade to a more recent version of Crowd you can simply stop the `crowd` container and start a new one based on a more recent image:
 
-    $> docker stop crowd
-    $> docker rm crowd
-    $> docker run ... (See above)
+    docker stop crowd
+    docker rm crowd
+    docker run ... (See above)
 
 As your data is stored in the data volume directory on the host it will still  be available after the upgrade.
 
@@ -100,6 +100,45 @@ Alternatively you can use a specific major, major.minor, or major.minor.patch ve
 * `dchevell/crowd:3.2.3`
 
 All versions from 2.2.2+ are available
+
+# Troubleshooting
+
+These images include built-in scripts to assist in performing common JVM diagnostic tasks.
+
+## Thread dumps
+
+`/opt/atlassian/support/thread-dumps.sh` can be run via `docker exec` to easily trigger the collection of thread
+dumps from the containerized application. For example:
+
+    docker exec my_jira /opt/atlassian/support/thread-dumps.sh
+
+By default this script will collect 10 thread dumps at a 5 second interval. This can
+be overridden by passing a custom value for the count and interval, by using `-c` / `--count`
+and `-i` / `--interval` respectively. For example, to collect 20 thread dumps at a 3 second interval:
+
+    docker exec my_container /opt/atlassian/support/thread-dumps.sh --count 20 --interval 3
+
+Thread dumps will be written to `$APP_HOME/thread_dumps/<date>`.
+
+Note: By default this script will capture output from top run in 'Thread-mode'. This can
+be disabled by passing `-n` / `--no-top`
+
+## Heap dump
+
+`/opt/atlassian/support/heap-dump.sh` can be run via `docker exec` to easily trigger the collection of a heap
+dump from the containerized application. For example:
+
+    docker exec my_container /opt/atlassian/support/heap-dump.sh
+
+A heap dump will be written to `$APP_HOME/heap.bin`. If a file already exists at this
+location, use `-f` / `--force` to overwrite the existing heap dump file.
+
+## Manual diagnostics
+
+The `jcmd` utility is also included in these images and can be used by starting a `bash` shell
+in the running container:
+
+    docker exec -it my_container /bin/bash
 
 # Support
 
