@@ -57,7 +57,7 @@ If Crowd is run behind a reverse proxy server as [described here](https://conflu
 
    Set 'true' if CATALINA_CONNECTOR_SCHEME is 'https'.
 
-## JVM configuration
+## JVM Configuration
 
 If you need to pass additional JVM arguments to Crowd, such as specifying a custom trust store, you can add them via the below environment variable
 
@@ -68,6 +68,13 @@ If you need to pass additional JVM arguments to Crowd, such as specifying a cust
 Example:
 
     docker run -e JVM_SUPPORT_RECOMMENDED_ARGS=-Djavax.net.ssl.trustStore=/var/atlassian/application-data/crowd/cacerts -v crowdVolume:/var/atlassian/application-data/crowd --name="crowd" -d -p 8095:8095 dchevell/crowd
+
+## Container Configuration
+
+* `SET_PERMISSIONS` (default: true)
+
+   Define whether to set home directory permissions on startup. Set to `false` to disable
+   this behaviour.
 
 # Upgrade
 
