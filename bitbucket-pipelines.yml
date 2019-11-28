@@ -3,37 +3,38 @@ image: atlassian/docker-release-maker:latest
 pipelines:
   custom:
     new-releases:
-      - step:
-          name: Crowd Ubuntu
-          services:
-            - docker
-          script:
-            - git submodule update --init --recursive
-            - export BASE_VERSION='3'
-            - export CONCURRENT_BUILDS='4'
-            - export DEFAULT_RELEASE='true'
-            - export DOCKER_REPO='dchevell/crowd'
-            - export DOCKERFILE_VERSION_ARG='CROWD_VERSION'
-            - export MAC_PRODUCT_KEY='crowd'
-            - export TAG_SUFFIXES='ubuntu'
-            - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
-            - python /usr/src/app/run.py --create
-      - step:
-          name: Crowd Alpine
-          services:
-            - docker
-          script:
-            - git submodule update --init --recursive
-            - export BASE_VERSION='3'
-            - export CONCURRENT_BUILDS='4'
-            - export DEFAULT_RELEASE='false'
-            - export DOCKER_REPO='dchevell/crowd'
-            - export DOCKERFILE='Dockerfile-alpine'
-            - export DOCKERFILE_VERSION_ARG='CROWD_VERSION'
-            - export MAC_PRODUCT_KEY='crowd'
-            - export TAG_SUFFIXES='alpine'
-            - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
-            - python /usr/src/app/run.py --create
+      - parallel:
+          - step:
+              name: Crowd Ubuntu
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - export BASE_VERSION='3'
+                - export CONCURRENT_BUILDS='4'
+                - export DEFAULT_RELEASE='true'
+                - export DOCKER_REPO='dchevell/crowd'
+                - export DOCKERFILE_VERSION_ARG='CROWD_VERSION'
+                - export MAC_PRODUCT_KEY='crowd'
+                - export TAG_SUFFIXES='ubuntu'
+                - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
+                - python /usr/src/app/run.py --create
+          - step:
+              name: Crowd Alpine
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - export BASE_VERSION='3'
+                - export CONCURRENT_BUILDS='4'
+                - export DEFAULT_RELEASE='false'
+                - export DOCKER_REPO='dchevell/crowd'
+                - export DOCKERFILE='Dockerfile-alpine'
+                - export DOCKERFILE_VERSION_ARG='CROWD_VERSION'
+                - export MAC_PRODUCT_KEY='crowd'
+                - export TAG_SUFFIXES='alpine'
+                - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
+                - python /usr/src/app/run.py --create
     ubuntu-custom-release:
       - variables:
           - name: CROWD_VERSION
@@ -65,37 +66,38 @@ pipelines:
             - docker push dchevell/crowd:${DOCKER_TAG}
   branches:
     master:
-      - step:
-          name: Crowd Ubuntu
-          services:
-            - docker
-          script:
-            - git submodule update --init --recursive
-            - export BASE_VERSION='3'
-            - export CONCURRENT_BUILDS='4'
-            - export DEFAULT_RELEASE='true'
-            - export DOCKER_REPO='dchevell/crowd'
-            - export DOCKERFILE_VERSION_ARG='CROWD_VERSION'
-            - export MAC_PRODUCT_KEY='crowd'
-            - export TAG_SUFFIXES='ubuntu'
-            - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
-            - python /usr/src/app/run.py --update
-      - step:
-          name: Crowd Alpine
-          services:
-            - docker
-          script:
-            - git submodule update --init --recursive
-            - export BASE_VERSION='3'
-            - export CONCURRENT_BUILDS='4'
-            - export DEFAULT_RELEASE='false'
-            - export DOCKER_REPO='dchevell/crowd'
-            - export DOCKERFILE='Dockerfile-alpine'
-            - export DOCKERFILE_VERSION_ARG='CROWD_VERSION'
-            - export MAC_PRODUCT_KEY='crowd'
-            - export TAG_SUFFIXES='alpine'
-            - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
-            - python /usr/src/app/run.py --update
+      - parallel:
+          - step:
+              name: Crowd Ubuntu
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - export BASE_VERSION='3'
+                - export CONCURRENT_BUILDS='4'
+                - export DEFAULT_RELEASE='true'
+                - export DOCKER_REPO='dchevell/crowd'
+                - export DOCKERFILE_VERSION_ARG='CROWD_VERSION'
+                - export MAC_PRODUCT_KEY='crowd'
+                - export TAG_SUFFIXES='ubuntu'
+                - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
+                - python /usr/src/app/run.py --update
+          - step:
+              name: Crowd Alpine
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - export BASE_VERSION='3'
+                - export CONCURRENT_BUILDS='4'
+                - export DEFAULT_RELEASE='false'
+                - export DOCKER_REPO='dchevell/crowd'
+                - export DOCKERFILE='Dockerfile-alpine'
+                - export DOCKERFILE_VERSION_ARG='CROWD_VERSION'
+                - export MAC_PRODUCT_KEY='crowd'
+                - export TAG_SUFFIXES='alpine'
+                - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
+                - python /usr/src/app/run.py --update
       - step:
           name: Update README
           image: python:3.7-alpine3.9
