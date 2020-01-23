@@ -94,8 +94,8 @@ Example:
 ## Data Center configuration
 
 This docker image can be run as part of a [Data Center][4] cluster. You can
-specify the following properties to start Confluence as a Data Center node,
-instead of manually configuring a cluster. See [Installing Confluence Data
+specify the following properties to start Crowd as a Data Center node,
+instead of manually configuring a cluster. See [Installing Crowd Data
 Center][5] for more information.
 
 ## Container Configuration
@@ -104,6 +104,62 @@ Center][5] for more information.
 
    Define whether to set home directory permissions on startup. Set to `false` to disable
    this behaviour.
+
+## Advanced Configuration
+
+As mentioned at the top of this section, the settings from the environment are
+used to populate the application configuration on the container startup. However
+in some cases you may wish to customise the settings in ways that are not
+supported by the environment variables above. In this case, it is possible to
+modify the base templates to add your own configuration. There are three main
+ways of doing this; modify our repository to your own image, build a new image
+from the existing one, or provide new templates at startup. We will briefly
+outline this methods here, but in practice how you do this will depend on your
+needs.
+
+#### Building your own image
+
+* Clone the Atlassian repository at https://bitbucket.org/atlassian-docker/docker-atlassian-crowd/
+* Modify or replace the [Jinja](https://jinja.palletsprojects.com/) templates
+  under `config`; _NOTE_: The files must have the `.j2` extensions. However you
+  don't have to use template variables if you don't wish.
+* Build the new image with e.g: `docker build --tag my-crowd-image --build-arg CROWD_VERSION=3.x.x .`
+* Optionally push to a registry, and deploy.
+
+#### Build a new image from the existing one
+
+* Create a new `Dockerfile`, which starts with the Atlassian Crowd base image e.g: `FROM atlassian/crowd:latest`.
+* Use a `COPY` line to overwrite the provided templates.
+* Build, push and deploy the new image as above.
+
+#### Overwrite the templates at runtime
+
+There are two main ways of doing this:
+
+* If your container is going to be long-lived, you can create it, modify the
+  installed templates under `/opt/atlassian/etc/`, and then run it.
+* Alternatively, you can create a volume containing your alternative templates,
+  and mount it over the provided templates at runtime
+  with `--volume my-config:/opt/atlassian/etc/`.
+
+# Shared directory and user IDs
+
+By default the Crowd application runs as the user `crowd`, with a UID
+and GID of 2004. Consequently this UID must have write access to the shared
+filesystem. If for some reason a different UID must be used, there are a number
+of options available:
+
+* The Docker image can be rebuilt with a different UID.
+* Under Linux, the UID can be remapped using
+  [user namespace remapping][7].
+
+To preserve strict permissions for certain configuration files, this container starts as
+`root` to perform bootstrapping before running Crowd under a non-privileged user
+account. If you wish to start the container as a non-root user, please note that Tomcat
+configuration will be skipped and a warning will be logged. You may still apply custom
+configuration in this situation by mounting configuration files directly, e.g.
+by mounting your own server.xml file directly to
+`/opt/atlassian/crowd/apache-tomcat/conf/server.xml`
 
 # Upgrade
 
@@ -187,3 +243,4 @@ Licensed under the Apache License, Version 2.0.
 [4]: https://confluence.atlassian.com/crowd/crowd-data-center-935372453.html
 [5]: https://confluence.atlassian.com/crowd/installing-crowd-data-center-935369773.html
 [6]: https://confluence.atlassian.com/crowd/backing-up-and-restoring-data-36470797.html
+[7]: https://docs.docker.com/engine/security/userns-remap/

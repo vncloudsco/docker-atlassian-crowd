@@ -5,21 +5,37 @@ pipelines:
     new-releases:
       - parallel:
           - step:
-              name: Crowd Ubuntu
+              name: Crowd JDK 8
               services:
                 - docker
               script:
                 - git submodule update --init --recursive
-                - export BASE_VERSION='3'
-                - export CONCURRENT_BUILDS='4'
+                - export START_VERSION='3'
+                - export END_VERSION='5'
                 - export DEFAULT_RELEASE='true'
                 - export DOCKER_REPO='atlassian/crowd'
                 - export DOCKERFILE_VERSION_ARG='CROWD_VERSION'
                 - export MAC_PRODUCT_KEY='crowd'
-                - export TAG_SUFFIXES='ubuntu'
+                - export TAG_SUFFIXES='jdk8,ubuntu'
                 - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
                 - python /usr/src/app/run.py --create
-    ubuntu-custom-release:
+          - step:
+              name: Crowd JDK 11
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - export START_VERSION='4'
+                - export END_VERSION='5'
+                - export DEFAULT_RELEASE='false'
+                - export DOCKER_REPO='atlassian/crowd'
+                - export DOCKERFILE_BUILDARGS='BASE_IMAGE=adoptopenjdk:11-hotspot'
+                - export DOCKERFILE_VERSION_ARG='CROWD_VERSION'
+                - export MAC_PRODUCT_KEY='crowd'
+                - export TAG_SUFFIXES='jdk11,ubuntu-jdk11'
+                - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
+                - python /usr/src/app/run.py --create
+    jdk8-custom-release:
       - variables:
           - name: CROWD_VERSION
           - name: DOCKER_TAG
@@ -33,22 +49,53 @@ pipelines:
               docker build -t atlassian/crowd:${DOCKER_TAG}
               --build-arg CROWD_VERSION=${CROWD_VERSION} .
             - docker push atlassian/crowd:${DOCKER_TAG}
+    jdk11-custom-release:
+      - variables:
+          - name: CROWD_VERSION
+          - name: DOCKER_TAG
+      - step:
+          services:
+            - docker
+          script:
+            - git submodule update --init --recursive
+            - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
+            - >
+              docker build -t atlassian/crowd:${DOCKER_TAG}
+              --build-arg BASE_IMAGE=adoptopenjdk:11-hotspot
+              --build-arg CROWD_VERSION=${CROWD_VERSION} .
+            - docker push atlassian/crowd:${DOCKER_TAG}
   branches:
     master:
       - parallel:
           - step:
-              name: Crowd Ubuntu
+              name: Crowd JDK 8
               services:
                 - docker
               script:
                 - git submodule update --init --recursive
-                - export BASE_VERSION='3'
-                - export CONCURRENT_BUILDS='4'
+                - export START_VERSION='3'
+                - export END_VERSION='4'
                 - export DEFAULT_RELEASE='true'
                 - export DOCKER_REPO='atlassian/crowd'
                 - export DOCKERFILE_VERSION_ARG='CROWD_VERSION'
                 - export MAC_PRODUCT_KEY='crowd'
                 - export TAG_SUFFIXES='ubuntu'
+                - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
+                - python /usr/src/app/run.py --update
+          - step:
+              name: Crowd JDK 11
+              services:
+                - docker
+              script:
+                - git submodule update --init --recursive
+                - export START_VERSION='4'
+                - export END_VERSION='5'
+                - export DEFAULT_RELEASE='false'
+                - export DOCKER_REPO='atlassian/crowd'
+                - export DOCKERFILE_BUILDARGS='BASE_IMAGE=adoptopenjdk:11-hotspot'
+                - export DOCKERFILE_VERSION_ARG='CROWD_VERSION'
+                - export MAC_PRODUCT_KEY='crowd'
+                - export TAG_SUFFIXES='jdk11,ubuntu-jdk11'
                 - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
                 - python /usr/src/app/run.py --update
       - step:
