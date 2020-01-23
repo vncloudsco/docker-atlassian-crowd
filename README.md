@@ -2,7 +2,7 @@
 
 Crowd provices single sign-on and user identity that's easy to use.
 
-Learn more about Crowd: [https://www.atlassian.com/software/crowd](https://www.atlassian.com/software/crowd)
+Learn more about Crowd: [https://www.atlassian.com/software/crowd][1]
 
 # Overview
 
@@ -15,12 +15,12 @@ For the `CROWD_HOME` directory that is used to store application data (amongst o
 To get started you can use a data volume, or named volumes. In this example we'll use named volumes.
 
     docker volume create --name crowdVolume
-    docker run -v crowdVolume:/var/atlassian/application-data/crowd --name="crowd" -d -p 8095:8095 dchevell/crowd
+    docker run -v crowdVolume:/var/atlassian/application-data/crowd --name="crowd" -d -p 8095:8095 atlassian/crowd
 
 
 **Success**. Crowd is now available on [http://localhost:8095](http://localhost:8095)*
 
-Please ensure your container has the necessary resources allocated to it. See [Supported Platforms](https://confluence.atlassian.com/crowd/supported-platforms-191851.html) for further information.
+Please ensure your container has the necessary resources allocated to it. See [Supported Platforms][2] for further information.
 
 
 _* Note: If you are using `docker-machine` on Mac OS X, please use `open http://$(docker-machine ip default):8095` instead._
@@ -39,23 +39,45 @@ If you need to override Crowd's default memory allocation, you can control the m
 
 ## Reverse Proxy Settings
 
-If Crowd is run behind a reverse proxy server as [described here](https://confluence.atlassian.com/crowd031/integrating-crowd-with-apache-949753124.html), then you need to specify extra options to make Crowd aware of the setup. They can be controlled via the below environment variables.
+If Crowd is run behind a reverse proxy server as [described here][3], then you need to specify extra options to make Crowd aware of the setup. They can be controlled via the below environment variables.
 
-* `CATALINA_CONNECTOR_PROXYNAME` (default: NONE)
+* `ATL_PROXY_NAME` (default: NONE)
 
-   The reverse proxy's fully qualified hostname.
+   The reverse proxy's fully qualified hostname. `CATALINA_CONNECTOR_PROXYNAME`
+   is also supported for backwards compatability.
 
-* `CATALINA_CONNECTOR_PROXYPORT` (default: NONE)
+* `ATL_PROXY_PORT` (default: NONE)
 
-   The reverse proxy's port number via which Crowd is accessed.
+   The reverse proxy's port number via which Crowd is
+   accessed. `CATALINA_CONNECTOR_PROXYPORT` is also supported for backwards
+   compatability.
 
-* `CATALINA_CONNECTOR_SCHEME` (default: http)
+* `ATL_TOMCAT_PORT` (default: 8095)
 
-   The protocol via which Crowd is accessed.
+   The port for Tomcat/Crowd to listen on. Depending on your container
+   deployment method this port may need to be
+   [exposed and published][docker-expose].
 
-* `CATALINA_CONNECTOR_SECURE` (default: false)
+* `ATL_TOMCAT_SCHEME` (default: http)
 
-   Set 'true' if CATALINA_CONNECTOR_SCHEME is 'https'.
+   The protocol via which Crowd is accessed. `CATALINA_CONNECTOR_SCHEME` is also
+   supported for backwards compatability.
+
+* `ATL_TOMCAT_SECURE` (default: false)
+
+   Set 'true' if `ATL_TOMCAT_SCHEME` is 'https'. `CATALINA_CONNECTOR_SECURE` is
+   also supported for backwards compatability.
+
+The following Tomcat/Catalina options are also supported. For more information,
+see https://tomcat.apache.org/tomcat-7.0-doc/config/index.html.
+
+* `ATL_TOMCAT_MGMT_PORT` (default: 8000)
+* `ATL_TOMCAT_MAXTHREADS` (default: 100)
+* `ATL_TOMCAT_MINSPARETHREADS` (default: 10)
+* `ATL_TOMCAT_CONNECTIONTIMEOUT` (default: 20000)
+* `ATL_TOMCAT_ENABLELOOKUPS` (default: false)
+* `ATL_TOMCAT_PROTOCOL` (default: HTTP/1.1)
+* `ATL_TOMCAT_ACCEPTCOUNT` (default: 10)
 
 ## JVM Configuration
 
@@ -67,7 +89,14 @@ If you need to pass additional JVM arguments to Crowd, such as specifying a cust
 
 Example:
 
-    docker run -e JVM_SUPPORT_RECOMMENDED_ARGS=-Djavax.net.ssl.trustStore=/var/atlassian/application-data/crowd/cacerts -v crowdVolume:/var/atlassian/application-data/crowd --name="crowd" -d -p 8095:8095 dchevell/crowd
+    docker run -e JVM_SUPPORT_RECOMMENDED_ARGS=-Djavax.net.ssl.trustStore=/var/atlassian/application-data/crowd/cacerts -v crowdVolume:/var/atlassian/application-data/crowd --name="crowd" -d -p 8095:8095 atlassian/crowd
+
+## Data Center configuration
+
+This docker image can be run as part of a [Data Center][4] cluster. You can
+specify the following properties to start Confluence as a Data Center node,
+instead of manually configuring a cluster. See [Installing Confluence Data
+Center][5] for more information.
 
 ## Container Configuration
 
@@ -94,17 +123,17 @@ For evaluations you can use the built-in database that will store its files in t
 
 If you're using an external database, you can configure Crowd to make a backup automatically each night. This will back up the current state, including the database to the `crowdVolume` docker volume, which can then be archived. Alternatively you can backup the database separately, and continue to create a backup archive of the docker volume to back up the Crowd Home directory.
 
-Read more about data recovery and backups: [https://confluence.atlassian.com/crowd/backing-up-and-restoring-data-36470797.html](https://confluence.atlassian.com/crowd/backing-up-and-restoring-data-36470797.html)
+Read more about data recovery and backups: [Backing Up and Restoring Data][6]
 
 # Versioning
 
-The `latest` tag matches the most recent release of Atlassian Crowd. Thus `dchevell/crowd:latest` will use the newest version of Crowd available.
+The `latest` tag matches the most recent release of Atlassian Crowd. Thus `atlassian/crowd:latest` will use the newest version of Crowd available.
 
 Alternatively you can use a specific major, major.minor, or major.minor.patch version of Crowd by using a version number tag:
 
-* `dchevell/crowd:3`
-* `dchevell/crowd:3.2`
-* `dchevell/crowd:3.2.3`
+* `atlassian/crowd:3`
+* `atlassian/crowd:3.2`
+* `atlassian/crowd:3.2.3`
 
 All versions from 2.2.2+ are available
 
@@ -147,6 +176,14 @@ in the running container:
 
     docker exec -it my_container /bin/bash
 
-# Support
+# License
 
-This Docker container is unsupported and is intended for illustration purposes only.
+Copyright © 2019 Atlassian Corporation Pty Ltd.
+Licensed under the Apache License, Version 2.0.
+
+[1]: https://www.atlassian.com/software/crowd
+[2]: https://confluence.atlassian.com/crowd/supported-platforms-191851.html
+[3]: https://confluence.atlassian.com/crowd031/integrating-crowd-with-apache-949753124.html
+[4]: https://confluence.atlassian.com/crowd/crowd-data-center-935372453.html
+[5]: https://confluence.atlassian.com/crowd/installing-crowd-data-center-935369773.html
+[6]: https://confluence.atlassian.com/crowd/backing-up-and-restoring-data-36470797.html
