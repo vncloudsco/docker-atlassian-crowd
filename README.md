@@ -191,7 +191,7 @@ Alternatively you can use a specific major, major.minor, or major.minor.patch ve
 * `atlassian/crowd:3.2`
 * `atlassian/crowd:3.2.3`
 
-All versions from 2.2.2+ are available
+All versions from 3.0+ are available
 
 # Troubleshooting
 
@@ -202,7 +202,7 @@ These images include built-in scripts to assist in performing common JVM diagnos
 `/opt/atlassian/support/thread-dumps.sh` can be run via `docker exec` to easily trigger the collection of thread
 dumps from the containerized application. For example:
 
-    docker exec my_jira /opt/atlassian/support/thread-dumps.sh
+    docker exec my_crowd /opt/atlassian/support/thread-dumps.sh
 
 By default this script will collect 10 thread dumps at 5 second intervals. This can
 be overridden by passing a custom value for the count and interval, by using `-c` / `--count`
