@@ -79,7 +79,7 @@ pipelines:
                 - export DOCKER_REPO='atlassian/crowd'
                 - export DOCKERFILE_VERSION_ARG='CROWD_VERSION'
                 - export MAC_PRODUCT_KEY='crowd'
-                - export TAG_SUFFIXES='ubuntu'
+                - export TAG_SUFFIXES='jdk8,ubuntu'
                 - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
                 - python /usr/src/app/run.py --update
           - step:
