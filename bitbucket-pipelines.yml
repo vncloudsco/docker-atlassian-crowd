@@ -123,3 +123,7 @@ pipelines:
             - export DOCKERFILE_VERSION_ARG='CROWD_VERSION'
             - py.test tests/
             - py.test shared-components/tests/
+definitions:
+  services:
+    docker:
+      memory: 2048
