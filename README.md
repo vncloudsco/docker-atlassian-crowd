@@ -2,7 +2,7 @@
 
 Crowd provices single sign-on and user identity that's easy to use.
 
-Learn more about Crowd: [https://www.atlassian.com/software/crowd](https://www.atlassian.com/software/crowd)
+Learn more about Crowd: [https://www.atlassian.com/software/crowd][1]
 
 # Overview
 
@@ -15,12 +15,12 @@ For the `CROWD_HOME` directory that is used to store application data (amongst o
 To get started you can use a data volume, or named volumes. In this example we'll use named volumes.
 
     docker volume create --name crowdVolume
-    docker run -v crowdVolume:/var/atlassian/application-data/crowd --name="crowd" -d -p 8095:8095 dchevell/crowd
+    docker run -v crowdVolume:/var/atlassian/application-data/crowd --name="crowd" -d -p 8095:8095 atlassian/crowd
 
 
 **Success**. Crowd is now available on [http://localhost:8095](http://localhost:8095)*
 
-Please ensure your container has the necessary resources allocated to it. See [Supported Platforms](https://confluence.atlassian.com/crowd/supported-platforms-191851.html) for further information.
+Please ensure your container has the necessary resources allocated to it. See [Supported Platforms][2] for further information.
 
 
 _* Note: If you are using `docker-machine` on Mac OS X, please use `open http://$(docker-machine ip default):8095` instead._
@@ -39,23 +39,45 @@ If you need to override Crowd's default memory allocation, you can control the m
 
 ## Reverse Proxy Settings
 
-If Crowd is run behind a reverse proxy server as [described here](https://confluence.atlassian.com/crowd031/integrating-crowd-with-apache-949753124.html), then you need to specify extra options to make Crowd aware of the setup. They can be controlled via the below environment variables.
+If Crowd is run behind a reverse proxy server as [described here][3], then you need to specify extra options to make Crowd aware of the setup. They can be controlled via the below environment variables.
 
-* `CATALINA_CONNECTOR_PROXYNAME` (default: NONE)
+* `ATL_PROXY_NAME` (default: NONE)
 
-   The reverse proxy's fully qualified hostname.
+   The reverse proxy's fully qualified hostname. `CATALINA_CONNECTOR_PROXYNAME`
+   is also supported for backwards compatability.
 
-* `CATALINA_CONNECTOR_PROXYPORT` (default: NONE)
+* `ATL_PROXY_PORT` (default: NONE)
 
-   The reverse proxy's port number via which Crowd is accessed.
+   The reverse proxy's port number via which Crowd is
+   accessed. `CATALINA_CONNECTOR_PROXYPORT` is also supported for backwards
+   compatability.
 
-* `CATALINA_CONNECTOR_SCHEME` (default: http)
+* `ATL_TOMCAT_PORT` (default: 8095)
 
-   The protocol via which Crowd is accessed.
+   The port for Tomcat/Crowd to listen on. Depending on your container
+   deployment method this port may need to be
+   [exposed and published][docker-expose].
 
-* `CATALINA_CONNECTOR_SECURE` (default: false)
+* `ATL_TOMCAT_SCHEME` (default: http)
 
-   Set 'true' if CATALINA_CONNECTOR_SCHEME is 'https'.
+   The protocol via which Crowd is accessed. `CATALINA_CONNECTOR_SCHEME` is also
+   supported for backwards compatability.
+
+* `ATL_TOMCAT_SECURE` (default: false)
+
+   Set 'true' if `ATL_TOMCAT_SCHEME` is 'https'. `CATALINA_CONNECTOR_SECURE` is
+   also supported for backwards compatability.
+
+The following Tomcat/Catalina options are also supported. For more information,
+see https://tomcat.apache.org/tomcat-7.0-doc/config/index.html.
+
+* `ATL_TOMCAT_MGMT_PORT` (default: 8000)
+* `ATL_TOMCAT_MAXTHREADS` (default: 100)
+* `ATL_TOMCAT_MINSPARETHREADS` (default: 10)
+* `ATL_TOMCAT_CONNECTIONTIMEOUT` (default: 20000)
+* `ATL_TOMCAT_ENABLELOOKUPS` (default: false)
+* `ATL_TOMCAT_PROTOCOL` (default: HTTP/1.1)
+* `ATL_TOMCAT_ACCEPTCOUNT` (default: 10)
 
 ## JVM Configuration
 
@@ -67,7 +89,14 @@ If you need to pass additional JVM arguments to Crowd, such as specifying a cust
 
 Example:
 
-    docker run -e JVM_SUPPORT_RECOMMENDED_ARGS=-Djavax.net.ssl.trustStore=/var/atlassian/application-data/crowd/cacerts -v crowdVolume:/var/atlassian/application-data/crowd --name="crowd" -d -p 8095:8095 dchevell/crowd
+    docker run -e JVM_SUPPORT_RECOMMENDED_ARGS=-Djavax.net.ssl.trustStore=/var/atlassian/application-data/crowd/cacerts -v crowdVolume:/var/atlassian/application-data/crowd --name="crowd" -d -p 8095:8095 atlassian/crowd
+
+## Data Center configuration
+
+This docker image can be run as part of a [Data Center][4] cluster. You can
+specify the following properties to start Crowd as a Data Center node,
+instead of manually configuring a cluster. See [Installing Crowd Data
+Center][5] for more information.
 
 ## Container Configuration
 
@@ -75,6 +104,62 @@ Example:
 
    Define whether to set home directory permissions on startup. Set to `false` to disable
    this behaviour.
+
+## Advanced Configuration
+
+As mentioned at the top of this section, the settings from the environment are
+used to populate the application configuration on the container startup. However
+in some cases you may wish to customise the settings in ways that are not
+supported by the environment variables above. In this case, it is possible to
+modify the base templates to add your own configuration. There are three main
+ways of doing this; modify our repository to your own image, build a new image
+from the existing one, or provide new templates at startup. We will briefly
+outline this methods here, but in practice how you do this will depend on your
+needs.
+
+#### Building your own image
+
+* Clone the Atlassian repository at https://bitbucket.org/atlassian-docker/docker-atlassian-crowd/
+* Modify or replace the [Jinja](https://jinja.palletsprojects.com/) templates
+  under `config`; _NOTE_: The files must have the `.j2` extensions. However you
+  don't have to use template variables if you don't wish.
+* Build the new image with e.g: `docker build --tag my-crowd-image --build-arg CROWD_VERSION=3.x.x .`
+* Optionally push to a registry, and deploy.
+
+#### Build a new image from the existing one
+
+* Create a new `Dockerfile`, which starts with the Atlassian Crowd base image e.g: `FROM atlassian/crowd:latest`.
+* Use a `COPY` line to overwrite the provided templates.
+* Build, push and deploy the new image as above.
+
+#### Overwrite the templates at runtime
+
+There are two main ways of doing this:
+
+* If your container is going to be long-lived, you can create it, modify the
+  installed templates under `/opt/atlassian/etc/`, and then run it.
+* Alternatively, you can create a volume containing your alternative templates,
+  and mount it over the provided templates at runtime
+  with `--volume my-config:/opt/atlassian/etc/`.
+
+# Shared directory and user IDs
+
+By default the Crowd application runs as the user `crowd`, with a UID
+and GID of 2004. Consequently this UID must have write access to the shared
+filesystem. If for some reason a different UID must be used, there are a number
+of options available:
+
+* The Docker image can be rebuilt with a different UID.
+* Under Linux, the UID can be remapped using
+  [user namespace remapping][7].
+
+To preserve strict permissions for certain configuration files, this container starts as
+`root` to perform bootstrapping before running Crowd under a non-privileged user
+account. If you wish to start the container as a non-root user, please note that Tomcat
+configuration will be skipped and a warning will be logged. You may still apply custom
+configuration in this situation by mounting configuration files directly, e.g.
+by mounting your own server.xml file directly to
+`/opt/atlassian/crowd/apache-tomcat/conf/server.xml`
 
 # Upgrade
 
@@ -94,19 +179,19 @@ For evaluations you can use the built-in database that will store its files in t
 
 If you're using an external database, you can configure Crowd to make a backup automatically each night. This will back up the current state, including the database to the `crowdVolume` docker volume, which can then be archived. Alternatively you can backup the database separately, and continue to create a backup archive of the docker volume to back up the Crowd Home directory.
 
-Read more about data recovery and backups: [https://confluence.atlassian.com/crowd/backing-up-and-restoring-data-36470797.html](https://confluence.atlassian.com/crowd/backing-up-and-restoring-data-36470797.html)
+Read more about data recovery and backups: [Backing Up and Restoring Data][6]
 
 # Versioning
 
-The `latest` tag matches the most recent release of Atlassian Crowd. Thus `dchevell/crowd:latest` will use the newest version of Crowd available.
+The `latest` tag matches the most recent release of Atlassian Crowd. Thus `atlassian/crowd:latest` will use the newest version of Crowd available.
 
 Alternatively you can use a specific major, major.minor, or major.minor.patch version of Crowd by using a version number tag:
 
-* `dchevell/crowd:3`
-* `dchevell/crowd:3.2`
-* `dchevell/crowd:3.2.3`
+* `atlassian/crowd:3`
+* `atlassian/crowd:3.2`
+* `atlassian/crowd:3.2.3`
 
-All versions from 2.2.2+ are available
+All versions from 3.0+ are available
 
 # Troubleshooting
 
@@ -117,7 +202,7 @@ These images include built-in scripts to assist in performing common JVM diagnos
 `/opt/atlassian/support/thread-dumps.sh` can be run via `docker exec` to easily trigger the collection of thread
 dumps from the containerized application. For example:
 
-    docker exec my_jira /opt/atlassian/support/thread-dumps.sh
+    docker exec my_crowd /opt/atlassian/support/thread-dumps.sh
 
 By default this script will collect 10 thread dumps at 5 second intervals. This can
 be overridden by passing a custom value for the count and interval, by using `-c` / `--count`
@@ -147,6 +232,15 @@ in the running container:
 
     docker exec -it my_container /bin/bash
 
-# Support
+# License
 
-This Docker container is unsupported and is intended for illustration purposes only.
+Copyright © 2019 Atlassian Corporation Pty Ltd.
+Licensed under the Apache License, Version 2.0.
+
+[1]: https://www.atlassian.com/software/crowd
+[2]: https://confluence.atlassian.com/crowd/supported-platforms-191851.html
+[3]: https://confluence.atlassian.com/crowd031/integrating-crowd-with-apache-949753124.html
+[4]: https://confluence.atlassian.com/crowd/crowd-data-center-935372453.html
+[5]: https://confluence.atlassian.com/crowd/installing-crowd-data-center-935369773.html
+[6]: https://confluence.atlassian.com/crowd/backing-up-and-restoring-data-36470797.html
+[7]: https://docs.docker.com/engine/security/userns-remap/
