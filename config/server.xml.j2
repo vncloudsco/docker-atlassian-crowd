@@ -8,7 +8,7 @@
                    disableUploadTimeout="true"
                    enableLookups="{{ atl_tomcat_enablelookups | default('false') }}"
                    protocol="{{ atl_tomcat_protocol | default('HTTP/1.1') }}"
-                   maxHttpHeaderSize="8192"
+                   maxHttpHeaderSize="{{ atl_tomcat_maxhttpheadersize | default('8192') }}"
                    maxThreads="{{ atl_tomcat_maxthreads | default('150') }}"
                    minSpareThreads="{{ atl_tomcat_minsparethreads | default('25') }}"
                    port="{{ atl_tomcat_port | default('8095') }}"
