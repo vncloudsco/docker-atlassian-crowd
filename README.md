@@ -233,6 +233,12 @@ in the running container:
 
     docker exec -it my_container /bin/bash
 
+# Support
+
+For product support, go to:
+
+* https://support.atlassian.com/crowd/
+
 # License
 
 Copyright © 2019 Atlassian Corporation Pty Ltd.
