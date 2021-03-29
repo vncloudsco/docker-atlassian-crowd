@@ -12,16 +12,16 @@ pipelines:
                 - git submodule update --init --recursive
                 - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
                 - >
-                  python make-releases.py 
-                    --create --create-eap
-                    --start-version=3
-                    --end-version=5
-                    --default-release
-                    --dockerfile-version-arg='CROWD_VERSION'
-                    --mac-product-key='crowd'
-                    --tag-suffixes='jdk8,ubuntu'
-                    --docker-repos='atlassian/crowd'
-                    --concurrent-builds='4'
+                  python /usr/src/app/make-releases.py \
+                    --create --create-eap \
+                    --start-version=3 \
+                    --end-version=5 \
+                    --default-release \
+                    --dockerfile-version-arg='CROWD_VERSION' \
+                    --mac-product-key='crowd' \
+                    --tag-suffixes='jdk8,ubuntu' \
+                    --docker-repos='atlassian/crowd' \
+                    --concurrent-builds='4' \
                     --push
  
           - step:
@@ -32,16 +32,16 @@ pipelines:
                 - git submodule update --init --recursive
                 - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
                 - >
-                  python make-releases.py 
-                    --create --create-eap
-                    --start-version=4
-                    --end-version=5
-                    --dockerfile-buildargs='BASE_IMAGE=adoptopenjdk:11-hotspot'
-                    --dockerfile-version-arg='CROWD_VERSION'
-                    --mac-product-key='crowd'
-                    --tag-suffixes='jdk11,ubuntu-jdk-11'
-                    --docker-repos='atlassian/crowd'
-                    --concurrent-builds='4'
+                  python /usr/src/app/make-releases.py \
+                    --create --create-eap \
+                    --start-version=4 \
+                    --end-version=5 \
+                    --dockerfile-buildargs='BASE_IMAGE=adoptopenjdk:11-hotspot' \
+                    --dockerfile-version-arg='CROWD_VERSION' \
+                    --mac-product-key='crowd' \
+                    --tag-suffixes='jdk11,ubuntu-jdk-11' \
+                    --docker-repos='atlassian/crowd' \
+                    --concurrent-builds='4' \
                     --push
 
     jdk8-custom-release:
@@ -84,16 +84,16 @@ pipelines:
                 - git submodule update --init --recursive
                 - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
                 - >
-                  python make-releases.py 
-                    --update
-                    --start-version=3
-                    --end-version=5
-                    --default-release
-                    --dockerfile-version-arg='CROWD_VERSION'
-                    --mac-product-key='crowd'
-                    --tag-suffixes='jdk8,ubuntu'
-                    --docker-repos='atlassian/crowd'
-                    --concurrent-builds='4'
+                  python /usr/src/app/make-releases.py \
+                    --update \
+                    --start-version=3 \
+                    --end-version=5 \
+                    --default-release \
+                    --dockerfile-version-arg='CROWD_VERSION' \
+                    --mac-product-key='crowd' \
+                    --tag-suffixes='jdk8,ubuntu' \
+                    --docker-repos='atlassian/crowd' \
+                    --concurrent-builds='4' \
                     --push
 
           - step:
@@ -104,16 +104,16 @@ pipelines:
                 - git submodule update --init --recursive
                 - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
                 - >
-                  python make-releases.py 
-                    --update
-                    --start-version=4
-                    --end-version=5
-                    --dockerfile-buildargs='BASE_IMAGE=adoptopenjdk:11-hotspot'
-                    --dockerfile-version-arg='CROWD_VERSION'
-                    --mac-product-key='crowd'
-                    --tag-suffixes='jdk11,ubuntu-jdk-11'
-                    --docker-repos='atlassian/crowd'
-                    --concurrent-builds='4'
+                  python /usr/src/app/make-releases.py \
+                    --update \
+                    --start-version=4 \
+                    --end-version=5 \
+                    --dockerfile-buildargs='BASE_IMAGE=adoptopenjdk:11-hotspot' \
+                    --dockerfile-version-arg='CROWD_VERSION' \
+                    --mac-product-key='crowd' \
+                    --tag-suffixes='jdk11,ubuntu-jdk-11' \
+                    --docker-repos='atlassian/crowd' \
+                    --concurrent-builds='4' \
                     --push
 
       - step:
