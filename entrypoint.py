@@ -10,5 +10,6 @@ CROWD_HOME = env['crowd_home']
 
 gen_cfg('server.xml.j2', f'{CROWD_INSTALL_DIR}/apache-tomcat/conf/server.xml')
 
-start_app(f'{CROWD_INSTALL_DIR}/start_crowd.sh -fg', CROWD_HOME, name='Crowd')
+start_app(f'{CROWD_INSTALL_DIR}/start_crowd.sh -fg', CROWD_HOME,
+          name='Crowd', env_cleanup=True)
 
