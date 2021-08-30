@@ -1,8 +1,16 @@
+from iterators import TimeoutIterator
 import pytest
+import re
+import signal
+import testinfra
+import time
 
 from helpers import get_app_home, get_app_install_dir, get_bootstrap_proc, \
-    parse_properties, parse_xml, run_image, wait_for_http_response, wait_for_proc
+    parse_properties, parse_xml, run_image, \
+    wait_for_http_response, wait_for_proc, wait_for_state, wait_for_log
 
+PORT = 8095
+STATUS_URL = f'http://localhost:{PORT}/status'
 
 
 def test_server_xml_defaults(docker_cli, image):
@@ -89,3 +97,29 @@ def test_server_xml_catalina_fallback(docker_cli, image):
     assert connector.get('scheme') == environment.get('CATALINA_CONNECTOR_SCHEME')
     # FIXME - Crowd context path is nontrivial to set
     #assert context.get('path') == environment.get('CATALINA_CONTEXT_PATH')
+
+
+def test_clean_shutdown(docker_cli, image, run_user):
+    container = docker_cli.containers.run(image, detach=True, user=run_user, ports={PORT: PORT})
+    host = testinfra.get_host("docker://"+container.id)
+
+    started = r'org\.apache\.catalina\.startup\.Catalina\.start Server startup'
+    wait_for_log(container, started)
+
+    container.kill(signal.SIGTERM)
+
+    end = r'org\.apache\.coyote\.AbstractProtocol\.destroy Destroying ProtocolHandler'
+    wait_for_log(container, end)
+
+
+def test_shutdown_script(docker_cli, image, run_user):
+    container = docker_cli.containers.run(image, detach=True, user=run_user, ports={PORT: PORT})
+    host = testinfra.get_host("docker://"+container.id)
+
+    started = r'org\.apache\.catalina\.startup\.Catalina\.start Server startup'
+    wait_for_log(container, started)
+
+    container.exec_run('/shutdown-wait.sh')
+
+    end = r'org\.apache\.coyote\.AbstractProtocol\.destroy Destroying ProtocolHandler'
+    wait_for_log(container, end)
