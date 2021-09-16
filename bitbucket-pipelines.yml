@@ -74,7 +74,7 @@ pipelines:
             - export DOCKER_REPO='atlassian/crowd'
             - pip install -q requests
             - python shared-components/image/push-readme.py
-  pull-requests:
+
     '**':
       - step:
           image: python:3.7-alpine3.9
