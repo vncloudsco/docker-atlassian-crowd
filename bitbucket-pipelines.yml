@@ -3,28 +3,26 @@ image: atlassian/docker-release-maker:latest
 pipelines:
   custom:
     new-releases:
-      - parallel:
-
-          - step:
-              name: Crowd JDK 11
-              services:
-                - docker
-              script:
-                - git submodule update --init --recursive
-                - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
-                - >
-                  python /usr/src/app/make-releases.py \
-                    --create --create-eap \
-                    --start-version=4 \
-                    --end-version=5 \
-                    --dockerfile-buildargs='BASE_IMAGE=adoptopenjdk/openjdk11' \
-                    --dockerfile-version-arg='CROWD_VERSION' \
-                    --mac-product-key='crowd' \
-                    --tag-suffixes='jdk11,ubuntu-jdk-11' \
-                    --default-release \                    
-                    --docker-repos='atlassian/crowd' \
-                    --concurrent-builds='4' \
-                    --push
+      - step:
+          name: Crowd JDK 11
+          services:
+            - docker
+          script:
+            - git submodule update --init --recursive
+            - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
+            - >
+              python /usr/src/app/make-releases.py \
+                --create --create-eap \
+                --start-version=4 \
+                --end-version=5 \
+                --dockerfile-buildargs='BASE_IMAGE=adoptopenjdk/openjdk11' \
+                --dockerfile-version-arg='CROWD_VERSION' \
+                --mac-product-key='crowd' \
+                --tag-suffixes='jdk11,ubuntu-jdk-11' \
+                --default-release \                    
+                --docker-repos='atlassian/crowd' \
+                --concurrent-builds='4' \
+                --push
 
     jdk11-custom-release:
       - variables:
@@ -44,28 +42,25 @@ pipelines:
 
   branches:
     master:
-      - parallel:
-
-          - step:
-              name: Crowd JDK 11
-              services:
-                - docker
-              script:
-                - git submodule update --init --recursive
-                - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
-                - >
-                  python /usr/src/app/make-releases.py \
-                    --update \
-                    --start-version=4 \
-                    --end-version=5 \
-                    --dockerfile-buildargs='BASE_IMAGE=adoptopenjdk/openjdk11' \
-                    --dockerfile-version-arg='CROWD_VERSION' \
-                    --mac-product-key='crowd' \
-                    --tag-suffixes='jdk11,ubuntu-jdk-11' \
-                    --docker-repos='atlassian/crowd' \
-                    --concurrent-builds='4' \
-                    --push
-
+      - step:
+          name: Crowd JDK 11
+          services:
+            - docker
+          script:
+            - git submodule update --init --recursive
+            - echo ${DOCKER_PASSWORD} | docker login --username ${DOCKER_USERNAME} --password-stdin
+            - >
+              python /usr/src/app/make-releases.py \
+                --update \
+                --start-version=4 \
+                --end-version=5 \
+                --dockerfile-buildargs='BASE_IMAGE=adoptopenjdk/openjdk11' \
+                --dockerfile-version-arg='CROWD_VERSION' \
+                --mac-product-key='crowd' \
+                --tag-suffixes='jdk11,ubuntu-jdk-11' \
+                --docker-repos='atlassian/crowd' \
+                --concurrent-builds='4' \
+                --push
       - step:
           name: Update README
           image: python:3.7-alpine3.9
