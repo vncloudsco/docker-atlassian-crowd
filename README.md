@@ -194,6 +194,24 @@ Alternatively you can use a specific major, major.minor, or major.minor.patch ve
 
 All versions from 3.0+ are available
 
+# Supported JDK versions
+
+All the Atlassian Docker images are now JDK11 only, and generated from the
+[official AdoptOpenJDK Docker images](https://hub.docker.com/r/adoptopenjdk/openjdk11).
+
+The Docker images follow the [Atlassian Support end-of-life
+policy](https://confluence.atlassian.com/support/atlassian-support-end-of-life-policy-201851003.html);
+images for unsupported versions of the products remain available but will no longer
+receive updates or fixes.
+
+Historically, we have also generated other versions of the images, including
+JDK8, Alpine, and 'slim' versions of the JDK. These legacy images still exist in
+Docker Hub, however they should be considered deprecated, and do not receive
+updates or fixes.
+
+If for some reason you need a different version, see "Building your own image"
+above.
+
 # Troubleshooting
 
 These images include built-in scripts to assist in performing common JVM diagnostic tasks.
@@ -238,6 +256,10 @@ in the running container:
 For product support, go to:
 
 * https://support.atlassian.com/crowd/
+
+You can also visit the [Atlassian Data Center on
+Kubernetes](https://community.atlassian.com/t5/Atlassian-Data-Center-on/gh-p/DC_Kubernetes)
+forum for discussion on running Atlassian Data Center products in containers.
 
 # License
 
