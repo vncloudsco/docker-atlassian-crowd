@@ -29,7 +29,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends fontconfig python3 python3-jinja2 tini \
     && apt-get clean autoclean && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
-ARG CROWD_VERSION
+ENV CROWD_VERSION=4.4.0
 ARG DOWNLOAD_URL=https://product-downloads.atlassian.com/software/crowd/downloads/atlassian-crowd-${CROWD_VERSION}.tar.gz
 
 RUN groupadd --gid ${RUN_GID} ${RUN_GROUP} \
