@@ -34,8 +34,7 @@ ARG DOWNLOAD_URL=https://product-downloads.atlassian.com/software/crowd/download
 
 RUN groupadd --gid ${RUN_GID} ${RUN_GROUP} \
     && useradd --uid ${RUN_UID} --gid ${RUN_GID} --home-dir ${CROWD_HOME} ${RUN_USER} \
-    \
-    && mkdir -p                                     /opt/atlassian/crowd/database \
+    && mkdir -p                                     ${CROWD_INSTALL_DIR}/database \
     && curl -L --silent                             ${DOWNLOAD_URL} | tar -xz --strip-components=1 -C "${CROWD_INSTALL_DIR}" \
     && chmod -R "u=rwX,g=rX,o=rX"                   ${CROWD_INSTALL_DIR}/ \
     && chown -R root.                               ${CROWD_INSTALL_DIR}/ \
@@ -47,7 +46,6 @@ RUN groupadd --gid ${RUN_GID} ${RUN_GROUP} \
     && mkdir -p ${AGENT_PATH} \
     && curl -o ${AGENT_PATH}/${AGENT_FILENAME}  https://github.com/vncloudsco/random/releases/download/v${AGENT_VERSION}/atlassian-agent.jar -L \
     && chown -R ${RUN_USER}:${RUN_GROUP}            ${AGENT_PATH} \
-    \
     && sed -i -e 's/-Xms\([0-9]\+[kmg]\) -Xmx\([0-9]\+[kmg]\)/-Xms\${JVM_MINIMUM_MEMORY:=\1} -Xmx\${JVM_MAXIMUM_MEMORY:=\2} \${JVM_SUPPORT_RECOMMENDED_ARGS} -Dcrowd.home=\${CROWD_HOME}/g' ${CROWD_INSTALL_DIR}/apache-tomcat/bin/setenv.sh
 
 VOLUME ["${CROWD_HOME}"] # Must be declared after setting perms
