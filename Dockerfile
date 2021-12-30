@@ -11,7 +11,7 @@ ENV RUN_UID                                         2004
 ENV RUN_GID                                         2004
 ENV AGENT_FILENAME                                  atlassian-agent.jar
 ENV JAVA_OPTS="-javaagent:${AGENT_PATH}/${AGENT_FILENAME} ${JAVA_OPTS}"
-ENV AGENT_VERSION   
+ENV AGENT_VERSION                                   1
 # https://confluence.atlassian.com/crowd/important-directories-and-files-78676537.html
 ENV CROWD_HOME                                      /var/atlassian/application-data/crowd
 ENV CROWD_INSTALL_DIR                               /opt/atlassian/crowd
