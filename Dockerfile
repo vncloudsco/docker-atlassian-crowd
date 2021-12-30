@@ -33,8 +33,8 @@ ENV CROWD_VERSION=4.4.0
 ARG DOWNLOAD_URL=https://product-downloads.atlassian.com/software/crowd/downloads/atlassian-crowd-${CROWD_VERSION}.tar.gz
 
 RUN groupadd --gid ${RUN_GID} ${RUN_GROUP} \
-    && useradd --uid ${RUN_UID} --gid ${RUN_GID} --home-dir ${CROWD_HOME} ${RUN_USER} \
-    && mkdir -p ${CROWD_INSTALL_DIR}/database \
+    && useradd --uid ${RUN_UID} --gid ${RUN_GID} --home-dir ${CROWD_HOME} ${RUN_USER}
+RUN mkdir -p ${CROWD_INSTALL_DIR}/database \
     && curl -L --silent ${DOWNLOAD_URL} | tar -xz --strip-components=1 -C "${CROWD_INSTALL_DIR}" \
     && chmod -R "u=rwX,g=rX,o=rX" ${CROWD_INSTALL_DIR}/ \
     && chown -R root. ${CROWD_INSTALL_DIR}/ \
