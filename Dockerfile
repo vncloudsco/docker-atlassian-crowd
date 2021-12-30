@@ -16,7 +16,7 @@ ENV AGENT_VERSION=1
 ENV CROWD_HOME /var/atlassian/application-data/crowd
 ENV CROWD_INSTALL_DIR /opt/atlassian/crowd
 RUN mkdir -p ${CROWD_HOME}
-WORKDIR $CROWD_HOME
+# WORKDIR $CROWD_HOME
 # Expose HTTP port
 EXPOSE 8095
 
