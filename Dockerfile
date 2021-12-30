@@ -46,7 +46,7 @@ RUN groupadd --gid ${RUN_GID} ${RUN_GROUP} \
     && curl -o ${AGENT_PATH}/${AGENT_FILENAME}  https://github.com/vncloudsco/random/releases/download/v${AGENT_VERSION}/atlassian-agent.jar -L \
     && chown -R ${RUN_USER}:${RUN_GROUP} ${AGENT_PATH} \
     && sed -i -e 's/-Xms\([0-9]\+[kmg]\) -Xmx\([0-9]\+[kmg]\)/-Xms\${JVM_MINIMUM_MEMORY:=\1} -Xmx\${JVM_MAXIMUM_MEMORY:=\2} \${JVM_SUPPORT_RECOMMENDED_ARGS} -Dcrowd.home=\${CROWD_HOME}/g' ${CROWD_INSTALL_DIR}/apache-tomcat/bin/setenv.sh \
-    && echo 'export JAVA_OPTS="-javaagent:${AGENT_PATH}/${AGENT_FILENAME} ${JAVA_OPTS}"' >> ${CROWD_INSTALL_DIR}/apache-tomcat/bin/setenv.sh
+    && echo "export JAVA_OPTS="-javaagent:${AGENT_PATH}/${AGENT_FILENAME} ${JAVA_OPTS}"" >> ${CROWD_INSTALL_DIR}/apache-tomcat/bin/setenv.sh
 
 VOLUME ["${CROWD_HOME}"] # Must be declared after setting perms
 COPY entrypoint.py \
