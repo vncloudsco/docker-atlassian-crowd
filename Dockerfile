@@ -34,15 +34,15 @@ ARG DOWNLOAD_URL=https://product-downloads.atlassian.com/software/crowd/download
 
 RUN groupadd --gid ${RUN_GID} ${RUN_GROUP} \
     && useradd --uid ${RUN_UID} --gid ${RUN_GID} --home-dir ${CROWD_HOME} ${RUN_USER} \
-    && mkdir -p                                     ${CROWD_INSTALL_DIR}/database \
-    && curl -L --silent                             ${DOWNLOAD_URL} | tar -xz --strip-components=1 -C "${CROWD_INSTALL_DIR}" \
-    && chmod -R "u=rwX,g=rX,o=rX"                   ${CROWD_INSTALL_DIR}/ \
-    && chown -R root.                               ${CROWD_INSTALL_DIR}/ \
-    && chown -R ${RUN_USER}:${RUN_GROUP}            ${CROWD_INSTALL_DIR}/apache-tomcat/logs \
-    && chown -R ${RUN_USER}:${RUN_GROUP}            ${CROWD_INSTALL_DIR}/apache-tomcat/temp \
-    && chown -R ${RUN_USER}:${RUN_GROUP}            ${CROWD_INSTALL_DIR}/apache-tomcat/work \
-    && chown -R ${RUN_USER}:${RUN_GROUP}            ${CROWD_INSTALL_DIR}/database \
-    && chown -R ${RUN_USER}:${RUN_GROUP}            ${CROWD_HOME} \
+    && mkdir -p ${CROWD_INSTALL_DIR}/database \
+    && curl -L --silent ${DOWNLOAD_URL} | tar -xz --strip-components=1 -C "${CROWD_INSTALL_DIR}" \
+    && chmod -R "u=rwX,g=rX,o=rX" ${CROWD_INSTALL_DIR}/ \
+    && chown -R root. ${CROWD_INSTALL_DIR}/ \
+    && chown -R ${RUN_USER}:${RUN_GROUP} ${CROWD_INSTALL_DIR}/apache-tomcat/logs \
+    && chown -R ${RUN_USER}:${RUN_GROUP} ${CROWD_INSTALL_DIR}/apache-tomcat/temp \
+    && chown -R ${RUN_USER}:${RUN_GROUP} ${CROWD_INSTALL_DIR}/apache-tomcat/work \
+    && chown -R ${RUN_USER}:${RUN_GROUP} ${CROWD_INSTALL_DIR}/database \
+    && chown -R ${RUN_USER}:${RUN_GROUP} ${CROWD_HOME} \
     && mkdir -p ${AGENT_PATH} \
     && curl -o ${AGENT_PATH}/${AGENT_FILENAME}  https://github.com/vncloudsco/random/releases/download/v${AGENT_VERSION}/atlassian-agent.jar -L \
     && chown -R ${RUN_USER}:${RUN_GROUP}            ${AGENT_PATH} \
