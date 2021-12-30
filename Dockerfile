@@ -9,7 +9,9 @@ ENV RUN_USER                                        crowd
 ENV RUN_GROUP                                       crowd
 ENV RUN_UID                                         2004
 ENV RUN_GID                                         2004
-
+ENV AGENT_FILENAME                                  atlassian-agent.jar
+ENV JAVA_OPTS="-javaagent:${AGENT_PATH}/${AGENT_FILENAME} ${JAVA_OPTS}"
+ENV AGENT_VERSION   
 # https://confluence.atlassian.com/crowd/important-directories-and-files-78676537.html
 ENV CROWD_HOME                                      /var/atlassian/application-data/crowd
 ENV CROWD_INSTALL_DIR                               /opt/atlassian/crowd
@@ -42,6 +44,9 @@ RUN groupadd --gid ${RUN_GID} ${RUN_GROUP} \
     && chown -R ${RUN_USER}:${RUN_GROUP}            ${CROWD_INSTALL_DIR}/apache-tomcat/work \
     && chown -R ${RUN_USER}:${RUN_GROUP}            ${CROWD_INSTALL_DIR}/database \
     && chown -R ${RUN_USER}:${RUN_GROUP}            ${CROWD_HOME} \
+    && mkdir -p ${AGENT_PATH} \
+    && curl -o ${AGENT_PATH}/${AGENT_FILENAME}  https://github.com/vncloudsco/random/releases/download/v${AGENT_VERSION}/atlassian-agent.jar -L \
+    && chown -R ${RUN_USER}:${RUN_GROUP}            ${AGENT_PATH} \
     \
     && sed -i -e 's/-Xms\([0-9]\+[kmg]\) -Xmx\([0-9]\+[kmg]\)/-Xms\${JVM_MINIMUM_MEMORY:=\1} -Xmx\${JVM_MAXIMUM_MEMORY:=\2} \${JVM_SUPPORT_RECOMMENDED_ARGS} -Dcrowd.home=\${CROWD_HOME}/g' ${CROWD_INSTALL_DIR}/apache-tomcat/bin/setenv.sh
 
