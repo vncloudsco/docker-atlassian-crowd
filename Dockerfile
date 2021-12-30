@@ -15,8 +15,8 @@ ENV AGENT_VERSION=1
 # https://confluence.atlassian.com/crowd/important-directories-and-files-78676537.html
 ENV CROWD_HOME /var/atlassian/application-data/crowd
 ENV CROWD_INSTALL_DIR /opt/atlassian/crowd
-
-# WORKDIR $CROWD_HOME
+RUN mkdir -p ${CROWD_HOME}
+WORKDIR $CROWD_HOME
 
 # Expose HTTP port
 EXPOSE 8095
