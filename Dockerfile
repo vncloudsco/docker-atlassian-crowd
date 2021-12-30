@@ -16,7 +16,6 @@ ENV AGENT_VERSION=1
 ENV CROWD_HOME /var/atlassian/application-data/crowd
 ENV CROWD_INSTALL_DIR /opt/atlassian/crowd
 RUN mkdir -p ${CROWD_HOME}
-WORKDIR $CROWD_HOME
 
 # Expose HTTP port
 EXPOSE 8095
@@ -49,7 +48,7 @@ RUN groupadd --gid ${RUN_GID} ${RUN_GROUP} \
     && sed -i -e 's/-Xms\([0-9]\+[kmg]\) -Xmx\([0-9]\+[kmg]\)/-Xms\${JVM_MINIMUM_MEMORY:=\1} -Xmx\${JVM_MAXIMUM_MEMORY:=\2} \${JVM_SUPPORT_RECOMMENDED_ARGS} -Dcrowd.home=\${CROWD_HOME}/g' ${CROWD_INSTALL_DIR}/apache-tomcat/bin/setenv.sh
 
 VOLUME ["${CROWD_HOME}"] # Must be declared after setting perms
-
+WORKDIR $CROWD_HOME
 COPY entrypoint.py \
      shutdown-wait.sh \
      shared-components/image/entrypoint_helpers.py  /
