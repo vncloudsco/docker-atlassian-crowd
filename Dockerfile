@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=adoptopenjdk/openjdk11
+ARG BASE_IMAGE=adoptopenjdk/openjdk11:aarch64-ubuntu-jre-11.0.13_8
 FROM $BASE_IMAGE
 
 LABEL maintainer="dc-deployments@atlassian.com"
